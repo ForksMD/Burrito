@@ -9,19 +9,25 @@
 
 using namespace std;
 
-InputTacoCommand::InputTacoCommand() : path("") {
+InputTacoCommand::InputTacoCommand()
+    : path("") {
 }
-InputTacoCommand::InputTacoCommand(string path) : path(path) {
-}
-
-InputGuildpointCommand::InputGuildpointCommand() : path("") {
-}
-InputGuildpointCommand::InputGuildpointCommand(string path) : path(path) {
+InputTacoCommand::InputTacoCommand(string path)
+    : path(path) {
 }
 
-OutputTacoCommand::OutputTacoCommand() : path("") {
+InputGuildpointCommand::InputGuildpointCommand()
+    : path("") {
 }
-OutputTacoCommand::OutputTacoCommand(string path) : path(path) {
+InputGuildpointCommand::InputGuildpointCommand(string path)
+    : path(path) {
+}
+
+OutputTacoCommand::OutputTacoCommand()
+    : path("") {
+}
+OutputTacoCommand::OutputTacoCommand(string path)
+    : path(path) {
 }
 
 OutputGuildpointCommand::OutputGuildpointCommand()
@@ -33,20 +39,11 @@ OutputGuildpointCommand::OutputGuildpointCommand(
     std::string path,
     OptionalInt split_by_category_depth,
     bool split_by_map_id
-) : path(path),
-    split_by_category_depth(split_by_category_depth),
-    split_by_map_id(split_by_map_id) {
+)
+    : path(path),
+      split_by_category_depth(split_by_category_depth),
+      split_by_map_id(split_by_map_id) {
 }
-
-class ArgumentConfig {
- public:
-    BehaviorType type;
-    MarkerFormat format;
-
-    ArgumentConfig(BehaviorType type, MarkerFormat format)
-        : type(type), format(format) {
-    }
-};
 
 ////////////////////////////////////////////////////////////////////////////////
 // ParsedArgReturn

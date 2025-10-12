@@ -312,7 +312,11 @@ void process_data(const ParsedArguments &parsed_arguments) {
         if (command == nullptr) {
             continue;
         }
-        write_taco_directory(command->path, &marker_categories, &parsed_pois);
+        write_taco_directory(
+            command->path,
+            &marker_categories,
+            &parsed_pois
+        );
     }
     end = chrono::high_resolution_clock::now();
     dur = end - begin;
