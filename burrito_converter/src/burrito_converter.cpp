@@ -209,24 +209,26 @@ void write_burrito_directory(
 // The universal entrypoint into burrito converter functionality. Both the CLI
 // and the library entrypoints direct here to do their actual processing.
 ////////////////////////////////////////////////////////////////////////////////
-void process_data(ParsedArguments parsed_arguments) {
+void process_data(const ParsedArguments &parsed_arguments) {
     // All of the loaded pois and categories
     vector<Parseable*> parsed_pois;
     map<string, Category> marker_categories;
     map<UniqueId, CategoryWithinMultiplePacks> top_level_category_file_locations_by_pack;
     map<UniqueId, CategoryWithinMultiplePacks> duplicate_categories;
-    vector<MarkerPackConfig> marker_pack_config = parsed_arguments.marker_pack_configs;
+    vector<BaseCommand*> marker_pack_config = parsed_arguments.marker_pack_configs;
 
     // Read in all the xml taco markerpacks
     auto begin = chrono::high_resolution_clock::now();
     for (size_t i = 0; i < marker_pack_config.size(); i++) {
-        if (marker_pack_config[i].type != BehaviorType::IMPORT || marker_pack_config[i].format != MarkerFormat::XML) {
+        auto* command = dynamic_cast<InputTacoCommand*>(marker_pack_config[i]);
+        if (command == nullptr) {
             continue;
         }
-        cout << "Loading taco pack " << marker_pack_config[i].path << endl;
+
+        cout << "Loading taco pack " << command->path << endl;
 
         map<UniqueId, CategoryWithinSinglePack> top_level_category_file_locations = read_taco_directory(
-            marker_pack_config[i].path,
+            command->path,
             &marker_categories,
             &parsed_pois
         );
@@ -242,13 +244,14 @@ void process_data(ParsedArguments parsed_arguments) {
     // Read in all the protobin guildpoint markerpacks
     begin = chrono::high_resolution_clock::now();
     for (size_t i = 0; i < marker_pack_config.size(); i++) {
-        if (marker_pack_config[i].type != BehaviorType::IMPORT || marker_pack_config[i].format != MarkerFormat::GUILDPOINT) {
+        auto* command = dynamic_cast<InputGuildpointCommand*>(marker_pack_config[i]);
+        if (command == nullptr) {
             continue;
         }
-        cout << "Loading guildpoint pack " << marker_pack_config[i].path << endl;
+        cout << "Loading guildpoint pack " << command->path << endl;
 
         map<UniqueId, CategoryWithinSinglePack> top_level_category_file_locations = read_burrito_directory(
-            marker_pack_config[i].path,
+            command->path,
             &marker_categories,
             &parsed_pois
         );
@@ -261,12 +264,14 @@ void process_data(ParsedArguments parsed_arguments) {
     ms = std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
     cout << "The guildpoint parse function took " << ms << " milliseconds to run" << endl;
 
+    // Identify duplicate categories
     for (map<UniqueId, CategoryWithinMultiplePacks>::iterator it = top_level_category_file_locations_by_pack.begin(); it != top_level_category_file_locations_by_pack.end(); it++) {
         if (it->second.categories.size() > 1) {
             duplicate_categories[it->first] = it->second;
         }
     }
 
+    // Error and show debug information for duplicate categories
     if (duplicate_categories.size() > 0 && parsed_arguments.allow_duplicates == false) {
         cout << "Did not write due to duplicates in categories." << endl;
         cout << "This commonly occurs when attempting to read the same pack multiple times or when separate packs coincidentally have the same name." << endl;
@@ -303,10 +308,11 @@ void process_data(ParsedArguments parsed_arguments) {
     // Write all of the xml taco paths
     begin = chrono::high_resolution_clock::now();
     for (size_t i = 0; i < marker_pack_config.size(); i++) {
-        if (marker_pack_config[i].type != BehaviorType::EXPORT || marker_pack_config[i].format != MarkerFormat::XML) {
+        auto* command = dynamic_cast<OutputTacoCommand*>(marker_pack_config[i]);
+        if (command == nullptr) {
             continue;
         }
-        write_taco_directory(marker_pack_config[i].path, &marker_categories, &parsed_pois);
+        write_taco_directory(command->path, &marker_categories, &parsed_pois);
     }
     end = chrono::high_resolution_clock::now();
     dur = end - begin;
@@ -316,10 +322,17 @@ void process_data(ParsedArguments parsed_arguments) {
     // Write all of the protobin guildpoint paths
     begin = chrono::high_resolution_clock::now();
     for (size_t i = 0; i < marker_pack_config.size(); i++) {
-        if (marker_pack_config[i].type != BehaviorType::EXPORT || marker_pack_config[i].format != MarkerFormat::GUILDPOINT) {
+        auto* command = dynamic_cast<OutputGuildpointCommand*>(marker_pack_config[i]);
+        if (command == nullptr) {
             continue;
         }
-        write_burrito_directory(marker_pack_config[i].path, marker_pack_config[i].split_by_map_id, marker_pack_config[i].split_by_category, &marker_categories, &parsed_pois);
+        write_burrito_directory(
+            command->path,
+            command->split_by_map_id,
+            command->split_by_category_depth,
+            &marker_categories,
+            &parsed_pois
+        );
     }
     end = chrono::high_resolution_clock::now();
     dur = end - begin;
