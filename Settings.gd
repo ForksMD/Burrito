@@ -66,7 +66,10 @@ func _ready():
 		else:
 			print("Error when parsing ", CONFIG_PATH, ". Error number ", json_parse_result.error, ". ", json_parse_result.error_string)
 	else:
-		print("Error when opening ", CONFIG_PATH, ". Error number ", result)
+		if result == ERR_FILE_NOT_FOUND:
+			print("No settings file found ", CONFIG_PATH, ". Using default settings")
+		else:
+			print("Error when opening ", CONFIG_PATH, ". Error number ", result)
 
 	if self._config_data == null:
 		self._config_data = {}
