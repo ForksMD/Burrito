@@ -20,15 +20,13 @@ TEST_F(ParseArgumentsTest, ValidInputPaths){
 
     ASSERT_EQ(parsed_arguments.marker_pack_configs.size(), 2);
 
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[0].type, BehaviorType::IMPORT);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[0].format, MarkerFormat::XML);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[0].path, "input1");
-    EXPECT_FALSE(parsed_arguments.marker_pack_configs[0].split_by_map_id);
+    InputTacoCommand* command_0 = dynamic_cast<InputTacoCommand*>(parsed_arguments.marker_pack_configs[0]);
+    EXPECT_NE(command_0, nullptr);
+    EXPECT_EQ(command_0->path, "input1");
 
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[1].type, BehaviorType::EXPORT);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[1].format, MarkerFormat::XML);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[1].path, "output1");
-    EXPECT_FALSE(parsed_arguments.marker_pack_configs[1].split_by_map_id);
+    OutputTacoCommand* command_1 = dynamic_cast<OutputTacoCommand*>(parsed_arguments.marker_pack_configs[1]);
+    EXPECT_NE(command_1, nullptr);
+    EXPECT_EQ(command_1->path, "output1");
 }
 
 TEST_F(ParseArgumentsTest, ValidSplitMapID){
@@ -47,15 +45,15 @@ TEST_F(ParseArgumentsTest, ValidSplitMapID){
 
     ASSERT_EQ(parsed_arguments.marker_pack_configs.size(), 2);
 
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[0].type, BehaviorType::IMPORT);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[0].format, MarkerFormat::GUILDPOINT);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[0].path, "input1");
-    EXPECT_FALSE(parsed_arguments.marker_pack_configs[0].split_by_map_id);
+    InputGuildpointCommand* command_0 = dynamic_cast<InputGuildpointCommand*>(parsed_arguments.marker_pack_configs[0]);
+    EXPECT_NE(command_0, nullptr);
+    EXPECT_EQ(command_0->path, "input1");
 
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[1].type, BehaviorType::EXPORT);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[1].format, MarkerFormat::GUILDPOINT);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[1].path, "output1");
-    EXPECT_TRUE(parsed_arguments.marker_pack_configs[1].split_by_map_id);
+    OutputGuildpointCommand* command_1 = dynamic_cast<OutputGuildpointCommand*>(parsed_arguments.marker_pack_configs[1]);
+    EXPECT_NE(command_1, nullptr);
+    EXPECT_EQ(command_1->path, "output1");
+    EXPECT_TRUE(command_1->split_by_map_id);
+    EXPECT_FALSE(command_1->split_by_category_depth.has_value());
 }
 
 TEST_F(ParseArgumentsTest, ValidSplitCategory){
@@ -74,18 +72,16 @@ TEST_F(ParseArgumentsTest, ValidSplitCategory){
 
     ASSERT_EQ(parsed_arguments.marker_pack_configs.size(), 2);
 
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[0].type, BehaviorType::IMPORT);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[0].format, MarkerFormat::GUILDPOINT);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[0].path, "input1");
-    EXPECT_FALSE(parsed_arguments.marker_pack_configs[0].split_by_map_id);
-    EXPECT_FALSE(parsed_arguments.marker_pack_configs[0].split_by_category.has_value());
+    InputGuildpointCommand* command_0 = dynamic_cast<InputGuildpointCommand*>(parsed_arguments.marker_pack_configs[0]);
+    EXPECT_NE(command_0, nullptr);
+    EXPECT_EQ(command_0->path, "input1");
 
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[1].type, BehaviorType::EXPORT);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[1].format, MarkerFormat::GUILDPOINT);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[1].path, "output1");
-    EXPECT_FALSE(parsed_arguments.marker_pack_configs[1].split_by_map_id);
-    EXPECT_TRUE(parsed_arguments.marker_pack_configs[1].split_by_category.has_value());
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[1].split_by_category.get_value(), 0);
+    OutputGuildpointCommand* command_1 = dynamic_cast<OutputGuildpointCommand*>(parsed_arguments.marker_pack_configs[1]);
+    EXPECT_NE(command_1, nullptr);
+    EXPECT_EQ(command_1->path, "output1");
+    EXPECT_FALSE(command_1->split_by_map_id);
+    EXPECT_TRUE(command_1->split_by_category_depth.has_value());
+    EXPECT_EQ(command_1->split_by_category_depth.get_value(), 0);
 }
 
 TEST_F(ParseArgumentsTest, ValidSplitCategoryWithDepth){
@@ -105,18 +101,16 @@ TEST_F(ParseArgumentsTest, ValidSplitCategoryWithDepth){
 
     ASSERT_EQ(parsed_arguments.marker_pack_configs.size(), 2);
 
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[0].type, BehaviorType::IMPORT);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[0].format, MarkerFormat::GUILDPOINT);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[0].path, "input1");
-    EXPECT_FALSE(parsed_arguments.marker_pack_configs[0].split_by_map_id);
-    EXPECT_FALSE(parsed_arguments.marker_pack_configs[0].split_by_category.has_value());
+    InputGuildpointCommand* command_0 = dynamic_cast<InputGuildpointCommand*>(parsed_arguments.marker_pack_configs[0]);
+    EXPECT_NE(command_0, nullptr);
+    EXPECT_EQ(command_0->path, "input1");
 
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[1].type, BehaviorType::EXPORT);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[1].format, MarkerFormat::GUILDPOINT);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[1].path, "output1");
-    EXPECT_FALSE(parsed_arguments.marker_pack_configs[1].split_by_map_id);
-    EXPECT_TRUE(parsed_arguments.marker_pack_configs[1].split_by_category.has_value());
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[1].split_by_category.get_value(), 2);
+    OutputGuildpointCommand* command_1 = dynamic_cast<OutputGuildpointCommand*>(parsed_arguments.marker_pack_configs[1]);
+    EXPECT_NE(command_1, nullptr);
+    EXPECT_EQ(command_1->path, "output1");
+    EXPECT_FALSE(command_1->split_by_map_id);
+    EXPECT_TRUE(command_1->split_by_category_depth.has_value());
+    EXPECT_EQ(command_1->split_by_category_depth.get_value(), 2);
 }
 
 TEST_F(ParseArgumentsTest, ValidMultipleInputPaths){
@@ -138,27 +132,24 @@ TEST_F(ParseArgumentsTest, ValidMultipleInputPaths){
     ASSERT_EQ(parsed_arguments.marker_pack_configs.size(), 4);
     EXPECT_TRUE(parsed_arguments.allow_duplicates);
 
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[0].type, BehaviorType::IMPORT);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[0].format, MarkerFormat::XML);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[0].path, "input1");
-    EXPECT_FALSE(parsed_arguments.marker_pack_configs[0].split_by_map_id);
+    InputTacoCommand* command_0 = dynamic_cast<InputTacoCommand*>(parsed_arguments.marker_pack_configs[0]);
+    EXPECT_NE(command_0, nullptr);
+    EXPECT_EQ(command_0->path, "input1");
 
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[1].type, BehaviorType::IMPORT);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[1].format, MarkerFormat::XML);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[1].path, "input2");
-    EXPECT_FALSE(parsed_arguments.marker_pack_configs[1].split_by_map_id);
+    InputTacoCommand* command_1 = dynamic_cast<InputTacoCommand*>(parsed_arguments.marker_pack_configs[1]);
+    EXPECT_NE(command_1, nullptr);
+    EXPECT_EQ(command_1->path, "input2");
 
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[2].type, BehaviorType::IMPORT);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[2].format, MarkerFormat::XML);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[2].path, "input3");
-    EXPECT_FALSE(parsed_arguments.marker_pack_configs[2].split_by_map_id);
+    InputTacoCommand* command_2 = dynamic_cast<InputTacoCommand*>(parsed_arguments.marker_pack_configs[2]);
+    EXPECT_NE(command_2, nullptr);
+    EXPECT_EQ(command_2->path, "input3");
 
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[3].type, BehaviorType::EXPORT);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[3].format, MarkerFormat::GUILDPOINT);
-    EXPECT_EQ(parsed_arguments.marker_pack_configs[3].path, "output1");
-    EXPECT_TRUE(parsed_arguments.marker_pack_configs[3].split_by_map_id);
+    OutputGuildpointCommand* command_3 = dynamic_cast<OutputGuildpointCommand*>(parsed_arguments.marker_pack_configs[3]);
+    EXPECT_NE(command_3, nullptr);
+    EXPECT_EQ(command_3->path, "output1");
+    EXPECT_TRUE(command_3->split_by_map_id);
+    EXPECT_FALSE(command_3->split_by_category_depth.has_value());
 }
-
 
 TEST_F(ParseArgumentsTest, InvalidSplitMapIDAfterInput){
     char* argv[] = {
@@ -176,7 +167,7 @@ TEST_F(ParseArgumentsTest, InvalidSplitMapIDAfterInput){
     std::string std_err = testing::internal::GetCapturedStderr();
 
     EXPECT_TRUE(parsed_arguments.marker_pack_configs.empty());
-    EXPECT_NE(std_err.find("Error: --split-by-map-id needs to follow an output argument"), std::string::npos);
+    EXPECT_NE(std_err.find("Error: Unknown argument --split-by-map-id"), std::string::npos);
 }
 
 TEST_F(ParseArgumentsTest, InvalidNoPathAfterInput){
@@ -193,7 +184,7 @@ TEST_F(ParseArgumentsTest, InvalidNoPathAfterInput){
     std::string std_err = testing::internal::GetCapturedStderr();
 
     EXPECT_TRUE(parsed_arguments.marker_pack_configs.empty());
-    EXPECT_NE(std_err.find("Error: Expected a path to a directory after --input-taco-path"), std::string::npos);
+    EXPECT_NE(std_err.find("Error: --input-taco-path is missing a path"), std::string::npos);
 }
 
 TEST_F(ParseArgumentsTest, InvalidNoPathAfterOutput){
@@ -210,7 +201,7 @@ TEST_F(ParseArgumentsTest, InvalidNoPathAfterOutput){
     std::string std_err = testing::internal::GetCapturedStderr();
 
     EXPECT_TRUE(parsed_arguments.marker_pack_configs.empty());
-    EXPECT_NE(std_err.find("Error: Expected a path to a directory after --output-taco-path"), std::string::npos);
+    EXPECT_NE(std_err.find("Error: --output-taco-path is missing a path"), std::string::npos);
 }
 
 TEST_F(ParseArgumentsTest, InvalidFileAfterWrongArgument){
@@ -218,8 +209,8 @@ TEST_F(ParseArgumentsTest, InvalidFileAfterWrongArgument){
         (char*)"./burrito_converter",
         (char*)"--input-taco-path",
         (char*)"input1",
-        (char*)"--output-taco-path",
-        (char*)"output1",        
+        (char*)"--output-guildpoint-path",
+        (char*)"output1",
         (char*)"--split-by-map-id",
         (char*)"output2"
     };
